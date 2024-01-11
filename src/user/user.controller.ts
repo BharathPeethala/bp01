@@ -1,7 +1,22 @@
-import { Body, Controller, Get, Param, Post, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Delete,
+  Query,
+  ParseIntPipe,
+  Req,
+  Res,
+  HttpCode,
+  BadRequestException,
+  Redirect,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { User } from './interface/user';
+import { User } from './interface/user.interface';
 import { EmailDto, UserDto } from './dto/user.dto';
+import { Request, Response } from 'express';
 
 @Controller('users')
 export class UserController {
@@ -12,13 +27,29 @@ export class UserController {
     return this.userService.getUsers();
   }
 
+  @HttpCode(210)
+  @Get('/test')
+  @Redirect('https://docs.nestjs.com/', 301)
+  testUser(
+    // @Query('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    console.log(req.headers, req.url, req.body);
+    // res.send('hi this bharath');
+  }
+
   @Get('/:email')
-  getUser(@Param() Param: EmailDto): User[] {
-    return this.userService.getUser(Param.email);
+  async getUser(@Param() Param: EmailDto): Promise<User[]> {
+    try {
+      return await this.userService.getUser(Param.email);
+    } catch (error) {
+      throw new BadRequestException('user not found');
+    }
   }
 
   @Post('/create')
-  createUser(@Body() user: UserDto): User {
+  async createUser(@Body() user: UserDto): Promise<User> {
     return this.userService.createUser(user);
   }
 
