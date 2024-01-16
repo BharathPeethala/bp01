@@ -4,9 +4,15 @@ import { AppService } from './app.service';
 import { TaskModule } from './task/task.module';
 import { DatabaseModule } from './database/database.module';
 import { CustomerModule } from './customer/customer.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TaskModule, DatabaseModule, CustomerModule],
+  imports: [
+    // ConfigModule.forRoot({ isGlobal: true }),
+    TaskModule,
+    DatabaseModule,
+    CustomerModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
